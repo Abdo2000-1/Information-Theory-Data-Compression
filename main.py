@@ -1,5 +1,7 @@
 from compressor import lz77_compress
-
+with open("text.txt", "r") as file:
+    text = file.read()
+    
 def sizes(text) -> None :
     res = lz77_compress(text, window=10, lookahead=10) 
     
@@ -20,7 +22,6 @@ def sizes(text) -> None :
     print(f"Size after compression : {size_after}")
 
 if __name__ == "__main__":
-    text = "ABAABABAABBBBBBBBBBBBA"
     res = lz77_compress(text, window=10, lookahead=10)
     print("Tokens:", res)
     

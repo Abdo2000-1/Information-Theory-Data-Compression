@@ -1,21 +1,37 @@
-def lz77_compress(text, window=10, lookahead=10) -> list:
+def lz77_compress(text, window=10, lookahead=10):
     res = []
     i = 0
 
     while i < len(text):
-        length, position = 0, 0
 
-        for j in range(max(0, i - window), i):
+        length = 0
+        position = 0
+        start = max(0, i - window)
+
+        for j in range(start, i):
             left = 0
-            while (left < lookahead and i + left < len(text) - 1
-                   and text[j + left] == text[i + left]):
+
+            while (
+                left < lookahead
+                and i + left < len(text)
+                and j + left < i
+                and text[j + left] == text[i + left]
+            ):
                 left += 1
 
-            if left > length:          
+            if left > length:
                 length = left
-                position = i - j     
-       
-        res.append((position, length, text[i + length]))
+                position = i - j
+
+         
+        if i + length < len(text):
+            next_char = text[i + length]
+        else:
+            next_char = ""
+
+        res.append((position, length, next_char))
+
+        
         i += length + 1
 
     return res
