@@ -7,26 +7,23 @@ def lz77_compress(text, window=10, lookahead=15):
         length = 0
         position = 0
         start = max(0, i - window)
+        max_length = min(lookahead, len(text) - i - 1) # handling the Reapetative Seq.
 
         for j in range(start, i):
             left = 0
 
             while (
-                left < lookahead
-                and i + left < len(text)
-                and j + left < i
+                left < max_length
                 and text[j + left] == text[i + left]
             ):
                 left += 1
+
             if left > length:
                 length = left
                 position = i - j
 
          
-        if i + length < len(text):
-            next_char = text[i + length]
-        else:
-            next_char = ""
+        next_char = text[i + length]
 
         res.append((position, length, next_char))
 
