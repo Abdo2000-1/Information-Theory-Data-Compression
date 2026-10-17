@@ -18,7 +18,6 @@ def lz77_compress(text, window=10, lookahead=10):
                 and text[j + left] == text[i + left]
             ):
                 left += 1
-
             if left > length:
                 length = left
                 position = i - j
