@@ -1,4 +1,4 @@
-def lz77_compress(text, window=10, lookahead=10):
+def lz77_compress(text, window=10, lookahead=15):
     res = []
     i = 0
 
