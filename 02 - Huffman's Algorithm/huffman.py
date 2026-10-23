@@ -21,7 +21,7 @@ class Huffman:
         self.root = None
         
         self.codes = {}
-
+        self.original_codes = {}
     def calculate_frequencies(self):
         for char in self.text:
             self.frequencies[char] += 1
@@ -91,7 +91,17 @@ class Huffman:
         self.codes = {}
         self._generate_codes_recursive(self.root , "")
         
-    def compress(self) :
+    def generate_original_codes(self):
+        symbols = sorted(self.frequencies.keys())
+
+        bits = max(1, math.ceil(math.log2(len(symbols))))
+
+        self.original_codes = {
+            symbol: format(i, f"0{bits}b")
+            for i, symbol in enumerate(symbols)
+        }
         
+
+            
         
         
