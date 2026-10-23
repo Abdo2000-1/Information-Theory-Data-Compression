@@ -1,8 +1,6 @@
-from collections import defaultdict
-from itertools import count
-import heapq
-from node import Node
 import math
+from node import Node
+
 
 class Huffman:
     def __init__(self, text, limit=0.05):
@@ -10,24 +8,29 @@ class Huffman:
         self.limit = limit
         self.len_text = len(self.text)
 
-        self.frequencies = defaultdict(int)
+        self.frequencies = {}
         self.probabilities = {}
         self.common_symbols = {}
         self.others_symbols = {}
         self.others_probability = 0
 
         self.huffman_symbols = {}
-        self.heap = []
+        self.nodes = []
         self.root = None
-        
+
         self.codes = {}
         self.original_codes = {}
+
     def calculate_frequencies(self):
         for char in self.text:
-            self.frequencies[char] += 1
+            if char in self.frequencies:
+                self.frequencies[char] += 1
+            else:
+                self.frequencies[char] = 1
 
     def calculate_probabilities(self):
-        for char, frequency in self.frequencies.items():
+        for char in self.frequencies:
+            frequency = self.frequencies[char]
             probability = frequency / self.len_text
 
             if probability <= self.limit:
@@ -38,45 +41,42 @@ class Huffman:
                 self.common_symbols[char] = probability
 
     def prepare_huffman_symbols(self):
-        for char, probability in self.common_symbols.items():
-            self.huffman_symbols[char] = probability
+        for char in self.common_symbols:
+            self.huffman_symbols[char] = self.common_symbols[char]
 
-        if self.others_symbols:
+        if len(self.others_symbols) > 0:
             self.huffman_symbols["Others"] = self.others_probability
 
     def build_huffman_tree(self):
-        self.heap = []
-        unique_id = count()
+        self.nodes = []
 
-        for symbol, probability in self.huffman_symbols.items():
+        for symbol in self.huffman_symbols:
+            probability = self.huffman_symbols[symbol]
             node = Node(probability, symbol)
-            heapq.heappush(
-                self.heap,
-                (probability, next(unique_id), node)
-            )
+            self.nodes.append(node)
 
-        if not self.heap:
+        if len(self.nodes) == 0:
             raise ValueError("Cannot build a Huffman tree without symbols.")
 
-        while len(self.heap) > 1:
-            p1, id1 , node1 = heapq.heappop(self.heap)
-            p2, id2 , node2 = heapq.heappop(self.heap)
+        while len(self.nodes) > 1:
 
+            self.nodes.sort(key=lambda x: x.probability)
+
+
+            node1 = self.nodes.pop(0)
+            node2 = self.nodes.pop(0)
+
+     
             parent = Node(
-                p1 + p2,
+                node1.probability + node2.probability,
                 left=node1,
                 right=node2
             )
+            self.nodes.append(parent)
 
-            heapq.heappush(
-                self.heap,
-                (parent.probability, next(unique_id), parent)
-            )
-
-        self.root = self.heap[0][2]
+        self.root = self.nodes[0]
         return self.root
-    
-    
+
     def _generate_codes_recursive(self, node, code):
         if node.left is None and node.right is None:
             self.codes[node.symbol] = code
@@ -89,19 +89,17 @@ class Huffman:
 
     def generate_codes(self):
         self.codes = {}
-        self._generate_codes_recursive(self.root , "")
-        
+        self._generate_codes_recursive(self.root, "")
+
     def generate_original_codes(self):
         symbols = sorted(self.frequencies.keys())
 
-        bits = max(1, math.ceil(math.log2(len(symbols))))
+        bits = math.ceil(math.log2(len(symbols)))
+        if bits < 1:
+            bits = 1
 
-        self.original_codes = {
-            symbol: format(i, f"0{bits}b")
-            for i, symbol in enumerate(symbols)
-        }
-        
+        self.original_codes = {}
+        for i in range(len(symbols)):
+            symbol = symbols[i]
 
-            
-        
-        
+            self.original_codes[symbol] = bin(i)[2:].zfill(bits)

@@ -1,9 +1,10 @@
-from huffman import Huffman 
+from huffman import Huffman
 
-class Compressor :
-    def __init__(self , huffman):
+
+class Compressor:
+    def __init__(self, huffman):
         self.huffman = huffman
-        
+
     def compress(self):
         text_binary_code = []
 
