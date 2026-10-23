@@ -1,31 +1,8 @@
-from huffman import Huffman 
-from node import Node
-import heapq
+from huffman import Huffman
+
 text = "a b c a z d a f c q d a d c u a b a p d"
 
-
-a = Node(0.30, 'a')
-b = Node(0.10, 'b')
-c = Node(0.15, 'c')
-d = Node(0.20, 'd')
-
-heap = [
-    (a.probability, a),
-    (b.probability, b),
-    (c.probability, c),
-    (d.probability, d)
-]
-
-heapq.heapify(heap)
-
-probability, node = heapq.heappop(heap)
-print(node.symbol) # min p in heap = 0.10
-
-probability, node = heapq.heappop(heap)
-print(node.symbol) 
-
-
-huffman = Huffman(text)
+huffman = Huffman(text, limit=0.05)
 
 huffman.calculate_frequencies()
 huffman.calculate_probabilities()
@@ -33,7 +10,12 @@ huffman.prepare_huffman_symbols()
 
 print("Frequencies:", dict(huffman.frequencies))
 print("Common symbols:", huffman.common_symbols)
-print("Others symbols:", huffman.others_symbols)
+print("Rare symbols:", huffman.others_symbols)
 print("Others probability:", huffman.others_probability)
+print("Huffman symbols:", huffman.huffman_symbols)
 
-print(huffman.huffman_symbols)
+huffman.build_huffman_tree()
+huffman.generate_codes()
+
+print("Huffman codes:", huffman.codes)
+print("Root probability:", huffman.root.probability)

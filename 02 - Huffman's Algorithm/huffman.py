@@ -2,7 +2,7 @@ from collections import defaultdict
 from itertools import count
 import heapq
 from node import Node
-
+import math
 
 class Huffman:
     def __init__(self, text, limit=0.05):
@@ -19,6 +19,8 @@ class Huffman:
         self.huffman_symbols = {}
         self.heap = []
         self.root = None
+        
+        self.codes = {}
 
     def calculate_frequencies(self):
         for char in self.text:
@@ -73,4 +75,23 @@ class Huffman:
 
         self.root = self.heap[0][2]
         return self.root
+    
+    
+    def _generate_codes_recursive(self, node, code):
+        if node.left is None and node.right is None:
+            self.codes[node.symbol] = code
 
+        if node.left is not None:
+            self._generate_codes_recursive(node.left, code + "0")
+
+        if node.right is not None:
+            self._generate_codes_recursive(node.right, code + "1")
+
+    def generate_codes(self):
+        self.codes = {}
+        self._generate_codes_recursive(self.root , "")
+        
+    def compress(self) :
+        
+        
+        
